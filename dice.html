@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+    <head>
+        <!--
+            CSCI 108 Online Final Project
+            Author: Cameron Yeomans
+            Date:   3/22/2018
+        
+            Filename: io.html
+        -->
+        <meta charset="utf-8" />
+        <title>Zuzu the wonder pup</title>
+        <link href="css/home.css" rel="stylesheet" />				
+		<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono:300|Roboto+Slab" rel="stylesheet"> 
+		<link rel="shortcut icon" href="images/icon.png">
+		<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="js/dice.js"></script>
+		<script type="text/javascript" src="js/smoothScroll.js"></script>
+    </head>
+	
+	<body onload="hide();">
+	<div id="top"></div>
+		<div class="wrapper">
+	
+			<div class="content" onclick="hide()">
+				
+				<div class="head">
+					<figure class="logo"><img src="images/flip.jpg"></figure>
+				</div>
+				
+				<figure class="divide"><h1 id="result">Javascript dice roll bot!</h1></figure>
+				<article class="intern">
+					<button class="diceBTN">D4</button>
+					<button class="diceBTN" onclick="roll()">D6</button>
+					<button class="diceBTN">D8</button>
+					<button class="diceBTN">D10</button>
+					<button class="diceBTN">D12</button>
+					<button class="diceBTN">D20</button>
+					<button class="diceBTN">D100</button>
+				</article>
+				
+				<article class="dice">
+					<canvas id='canvas'></canvas>
+				</article>
+
+				<footer>
+					<p>Back to the <strong onclick="scollSmooth('top')" >top of the page &uarr;</strong></p>	
+				</footer>
+				<div id="copyright">
+				
+				</div>
+			</div>
+		
+			<div class="side-bar">
+				<div class="title">
+					<h1>For all your RPG needs</h1>
+				</div>
+		
+				<nav>
+					<ul>
+						<li><a href="index.html">Home</a></li>
+						<li><a href="dice.html">Dice</a></li>	
+						<li><a href="dogs.html">Dogs</a></li>
+						<li><a href="frogs.html">Frogs</a></li>
+						<li><a href="gorl.html">Gorl</a></li>
+						<li><a href="boids.html">Boids</a></li>
+					</ul>
+				</nav>
+			</div>
+			
+			<div class="copyright">
+				<p>Site Designed by Cameron Yeomans 2020 &copy;</p>
+			</div>
+
+			<script>
+			var isRolled = false; 
+				
+			function roll(){
+
+				if(isRolled){
+					return;
+				}else{
+					isRolled = true;
+				}
+
+
+				var time = 0;
+
+				var canvasWidth = 880;
+ 				var canvasHeight = 574;
+ 				var spriteWidth = 880; 
+ 				var spriteHeight = 574; 
+ 
+ 				var rows = 2; 
+ 				var cols = 3; 
+ 
+ 				var width = spriteWidth/cols; 
+ 				var height = spriteHeight/rows; 
+ 
+ 				var curFrameX = 0;
+ 				var curFrameY = 0; 
+ 
+ 				var randIntX = 0;
+ 				var randIntY = 0;				 
+ 
+ 				var Xac =0;
+ 				var Yac =0;
+ 				var gravity = 5;
+
+ 				var prevX = 0;
+ 				var prevY = 0;
+
+ 				var x = 0;
+ 				var y = 0; 
+ 
+ 				var sourceX = 0; 
+ 				var sourceY = 0; 
+  
+ 				var canvas = document.getElementById('canvas');
+
+ 				var title = document.getElementById('result');
+ 			
+ 				canvas.style.zIndex = "100";
+
+ 				canvas.width = document.documentElement.clientWidth;
+ 				canvas.height = document.documentElement.clientHeight; 
+ 
+ 				var ctx = canvas.getContext("2d");
+ 
+ 				var character = new Image(); 
+ 				character.src = "images/diceSpritesheet.png";
+ 
+ 
+ 				function updateFrame(){
+ 					randIntX = Math.floor(Math.random() * 3); 
+ 					randIntY = Math.floor(Math.random() * 2);
+ 					sourceX = width * randIntX;
+ 					sourceY = height * randIntY;
+ 					ctx.clearRect(prevX,prevY,width,height); 
+				}
+
+				async function draw(){
+					if(time > 50){
+						isRolled = false;
+						ctx.clearRect(prevX,prevY,width,height);
+						canvas.style.zIndex = "-100";
+						result();
+						return;
+					}
+					time = time + 1;
+ 					updateFrame(); 
+ 					ctx.drawImage(character,sourceX,sourceY,width,height,x,y,width,height);
+				}
+
+				async function move(){
+					if(time > 50){
+						isRolled = false;
+						ctx.clearRect(prevX,prevY,width,height);
+						result();
+						return;
+					}
+					character.setAttribute('style','transform:rotate(10deg)');
+					prevY = y;
+					prevX = x;
+					if(x >= canvasWidth){
+						
+
+					}else{
+						x +=15;
+						if(y <= canvasHeight){
+							y +=Yac;
+							Yac += gravity;
+						}else{
+							Yac = (Yac/2) * -1;
+							y = y-50; 
+						}
+					}
+				}
+
+				function result(){
+					//to do: add title change
+				}
+
+				var drawInt = setInterval(draw,75);
+				var moveInt = setInterval(move,75);	
+
+			}
+			</script>	
+	</body>
+</html>

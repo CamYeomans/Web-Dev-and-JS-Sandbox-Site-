@@ -1,0 +1,244 @@
+<!doctype html>
+<html>
+    <head>
+        <!--
+            CSCI 108 Online Final Project
+            Author: Cameron Yeomans
+            Date:   3/22/2018
+        
+            Filename: io.html
+        -->
+        <meta charset="utf-8" />
+        <title>Zuzu the wonder pup</title>
+        <link href="css/home.css" rel="stylesheet" />				
+		<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono:300|Roboto+Slab" rel="stylesheet"> 
+		<link rel="shortcut icon" href="images/icon.png">
+		<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="js/smoothScroll.js"></script>
+		
+    </head>
+	
+	<body onload="hide();">
+	<div id="top"></div>
+		<div class="wrapper">
+	
+			<div class="content" onclick="hide()">
+				
+				<div class="head">
+					<canvas id="bg"></canvas>
+					<canvas id="scene"></canvas>
+					<canvas id="white"></canvas>
+				</div>
+				
+				<figure class="divide"><h1>Great Things!</h1></figure>
+				<article class="intern">
+					<p>Hey look over here, we got some good stuff here.</p>
+					
+				</article>
+				
+				<footer>
+					<p>Back to the <strong onclick="scollSmooth('top')" >top of the page &uarr;</strong></p>	
+				</footer>
+				<div id="copyright">
+				
+				</div>
+			</div>
+		
+			<div class="side-bar">
+				<div class="title">
+					<h1>Cool Stuff</h1>
+				</div>
+		
+				<nav>
+					<ul>
+						<li><a href="index.html">Home</a></li>
+						<li><a href="dice.html">Dice</a></li>	
+						<li><a href="dogs.html">Dogs</a></li>
+						<li><a href="frogs.html">Frogs</a></li>
+						<li><a href="gorl.html">Gorl</a></li>
+						<li><a href="boids.html">Boids</a></li>
+					</ul>
+				</nav>
+			</div>
+			
+			<div class="copyright">
+				<p>Site Designed by Cameron Yeomans 2020 &copy;</p>
+			</div>
+		<div>
+	</body>
+
+	<script type="text/javascript">
+		var totalFish = 25;
+
+		var canvasBG = document.getElementById('bg'),
+		contextBG = canvasBG.getContext('2d');
+
+		var canvas = document.getElementById('scene'),
+		context = canvas.getContext('2d');
+
+		var whiteFishCanvas = document.getElementById('white'),
+		contextWhite = whiteFishCanvas.getContext('2d');
+
+		canvas.style.width ='100%';
+  		canvas.style.height='100%';
+		make_base();
+
+		function Fish(xPos, yPos,image) {
+    		this.xPosVal = xPos;
+    		this.yPosVal = yPos; 
+    		this.fishImg = new Image();
+    		this.fishImg.src = image;
+    		this.fishImg.style.width = 20;
+    		this.fishImg.style.height = 15;
+    		this.fishImg.style.zIndex = "100";
+    		this.randDist = -10;
+    		this.randTime = -10;
+    		this.fishItter = 0;
+    		this.invert = 1;
+    	}
+
+    	var mainFish = new Fish(100, 100, 'images/fish.png');
+		
+		let fishArray = Array(totalFish);
+
+		var fishCount = 0;
+
+		while(fishCount < totalFish){
+			var whiteFish = new Fish(Math.floor(Math.random() * this.canvas.width), Math.floor(Math.random() * this.canvas.height),'images/whitefish.png');
+			var randWhiteTime = Math.floor(Math.random() * 21) + 4;
+			var randWhiteDist = Math.floor(Math.random() * 21) - 10;
+			whiteFish.randTime = randWhiteTime;
+			whiteFish.randDist = randWhiteDist;	
+			fishArray[fishCount] = whiteFish;
+			fishCount +=1;
+		}
+		fishCount = 0;
+
+		function make_base()
+		{
+  			base_image = new Image();
+  			base_image.src = 'images/tank.jpg';
+  			base_image.style.zIndex = "10";	
+
+			var scale = Math.max(canvas.width / base_image.width, canvas.height / base_image.height);
+       		var x = (canvas.width / 2) - (base_image.width / 2) * scale;
+    		var y = (canvas.height / 2) - (base_image.height / 2) * scale;
+    				
+
+  			base_image.onload = function(){
+    			contextBG.drawImage(base_image, x, y, base_image.width * scale, base_image.height * scale);
+    			drawWhiteFish();
+  			}
+
+		}
+
+		var yCount = 0;
+		var id = setInterval(frame, 30);
+		var id = setInterval(whiteFishFrame,30);
+		var randIntTime = Math.floor(Math.random() * 21) + 4;
+		var randIntDist = Math.floor(Math.random() * 21);
+		var inverter = Math.floor(Math.random() * Math.floor(2));
+			if(inverter == 0){
+				inverter = -1;
+			}
+
+		function drawWhiteFish(){
+			while(fishCount < totalFish){
+				var test = fishArray[fishCount];
+				contextWhite.drawImage(whiteFish.fishImg, test.xPosVal,test.yPosVal,20,15);
+				fishCount +=1;
+			}
+			
+		}
+
+		function whiteFishFrame(){
+			contextWhite.clearRect(0, 0, this.canvas.width, this.canvas.height);
+			var fishFrameCount = 0;
+			while(fishFrameCount < totalFish){
+				var specFish = fishArray[fishFrameCount];
+				if(specFish.xPosVal >= this.canvas.width + 3){
+					specFish.xPosVal = 0;
+				}
+
+				else if (specFish.xPosVal <= -3){
+					specFish.xPosVal = this.canvas.width;
+				}
+
+				else if(specFish.yPosVal >= this.canvas.height +3){
+					specFish.yPosVal = 0;
+				} 
+
+				else if(specFish.yPosVal <= -3){
+					specFish.yPosVal = this.canvas.height;
+				}
+
+				if(specFish.fishItter >= specFish.randTime){
+					specFish.randTime = Math.floor(Math.random() * 21) + 4;
+					specFish.randDist = Math.floor(Math.random() * 21) - 10;
+					specFish.fishItter = 0;	
+					var whiteInverter = Math.floor(Math.random() * Math.floor(2));
+					if(whiteInverter == 0){
+						whiteInverter = -1;
+					}
+					specFish.invert = whiteInverter;
+					fishArray[fishFrameCount] = specFish;
+					var whiteMoveDist = (Math.floor(specFish.randDist/specFish.randTime)) * specFish.invert;
+					contextWhite.drawImage(specFish.fishImg, specFish.xPosVal+1,specFish.yPosVal + whiteMoveDist ,20,15);
+				}else{
+
+					var whiteMoveDist = (Math.floor(specFish.randDist/specFish.randTime)) * specFish.invert;
+					contextWhite.drawImage(specFish.fishImg, specFish.xPosVal+1,specFish.yPosVal + whiteMoveDist ,20,15);
+					specFish.xPosVal += 1;
+					specFish.yPosVal += whiteMoveDist;
+					specFish.fishItter = specFish.fishItter + 1;
+					fishArray[fishFrameCount] = specFish;
+				}
+
+				fishFrameCount +=1;
+			} 			
+		}
+
+		function frame(){
+			context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+			if(mainFish.xPosVal >= this.canvas.width + 3){
+				mainFish.xPosVal = 0;
+			}
+
+			else if (mainFish.xPosVal <= -3){
+				mainFish.xPosVal = this.canvas.width;
+			}
+
+			else if(mainFish.yPosVal >= this.canvas.height +3){
+				mainFish.yPosVal = 0;
+			} 
+
+			else if(mainFish.yPosVal <= -3){
+				mainFish.yPosVal = this.canvas.height;
+			}
+
+
+			yCount +=1;
+
+			var moveDist = (Math.floor(randIntDist/randIntTime)) * inverter;
+			
+			context.drawImage(mainFish.fishImg, mainFish.xPosVal+1,mainFish.yPosVal + moveDist ,20,15);
+			mainFish.xPosVal += 1;
+			mainFish.yPosVal += moveDist;
+
+			if(yCount == randIntTime){
+				randIntTime = Math.floor(Math.random() * 21) + 4;
+				randIntDist = Math.floor(Math.random() * 21) - 10;
+				inverter = Math.floor(Math.random() * Math.floor(2));
+				if(inverter == 0){
+				inverter = -1;
+				}
+				yCount = 0; 
+			}
+		}
+
+
+	</script>
+
+</html>
+
